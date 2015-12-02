@@ -1,0 +1,18 @@
+<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    
+    android:layout_width="fill_parent"
+    android:layout_height="70dip"
+    android:background="#00000000"
+    
+>
+
+    <ImageView
+        android:id="@+id/flipcam"
+        android:layout_width="40dip"
+        android:layout_height="40dip"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="42dp"
+        android:src="@drawable/flipcam" />
+
+</RelativeLayout >

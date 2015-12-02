@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.customcamera"
+    android:versionCode="1"
+    android:versionName="1.0" 
+    >
+
+    <uses-sdk
+        android:minSdkVersion="11"
+        android:targetSdkVersion="22" />
+    
+        
+         <uses-permission android:name="android.permission.CAMERA"/>
+
+<uses-feature android:name="android.hardware.camera" android:required="false"/>
+<uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
+<uses-feature android:name="android.hardware.camera.front" android:required="false"/>
+<uses-feature android:name="android.hardware.camera.front.autofocus" android:required="false"/>
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+<uses-permission android:name="android.permission.WRITE_SETTINGS" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+   
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        
+         <activity
+        android:name="com.example.customcamera.HomeScreen"
+        android:label="@string/app_name" 
+        android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"  >
+        	<intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <activity
+            android:name=".MainActivity"
+            android:label="Camera" 
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+            android:configChanges="orientation|screenSize"
+            android:parentActivityName="com.example.customcamera.HomeScreen"
+           >
+        </activity>
+        
+       <activity
+           
+        android:name="com.example.customcamera.mImageview"
+        android:label="mImageview"
+        android:parentActivityName="com.example.customcamera.MainActivity" >
+        
+    </activity>
+    <activity
+           
+        android:name="com.example.customcamera.demo"
+        android:label="demo"
+        android:parentActivityName="com.example.customcamera.MainActivity" >
+        
+    </activity>
+    <activity
+           
+        android:name="com.example.customcamera.demov2"
+        android:label="demov2"
+        android:parentActivityName="com.example.customcamera.MainActivity" 
+        android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+        >
+        
+    </activity>
+    <activity
+           
+        android:name="com.example.customcamera.ImgView"
+        android:label="ImgView"
+        android:parentActivityName="com.example.customcamera.MainActivity" 
+        android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+        >
+        
+    </activity>
+       <activity
+           
+        android:name="com.example.customcamera.GalleryActivity"
+        android:label="GalleryActivity"
+        android:parentActivityName="com.example.customcamera.MainActivity"
+        android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+         >
+        
+    </activity>
+    </application>
+
+</manifest>

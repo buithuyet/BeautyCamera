@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#D9000000" >
+
+    
+
+    <HorizontalScrollView
+        android:id="@+id/horizontalScrollView1edit"
+        android:layout_width="fill_parent"
+        android:layout_height="100dip"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/imgedit"
+        android:scrollbars="none" >
+
+        <LinearLayout
+            android:id="@+id/linearScrolledit"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:orientation="horizontal" >
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <Button
+        android:id="@+id/saveedit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/imgedit"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="22dp"
+        android:background="@android:color/transparent"
+        android:text="Next"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp" />
+   
+
+    <ImageView
+        android:id="@+id/imgedit"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/canceledit"
+        android:layout_marginTop="18dp"
+        android:scaleType="centerInside" />
+
+    <Button
+        android:id="@+id/canceledit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="22dp"
+        android:layout_marginTop="21dp"
+        android:background="@android:color/transparent"
+        android:text="Cancel"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp" />
+     <ProgressBar
+        android:id="@+id/progressBaredit"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:indeterminateDrawable="@drawable/progress"
+        android:visibility="gone" >
+    </ProgressBar>
+
+</RelativeLayout>

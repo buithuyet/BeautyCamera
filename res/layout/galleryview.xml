@@ -1,0 +1,26 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <ImageView
+        android:id="@+id/imgView_gall"
+        android:layout_width="match_parent"
+        android:layout_height="315dp"
+        android:layout_weight="0.76"
+        android:background="#cfcfcf"
+        android:paddingBottom="5dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="5dp"
+        android:src="@drawable/gallery_icon" />
+
+    <Gallery
+        android:id="@+id/gallery1"
+        android:layout_width="fill_parent"
+        android:layout_height="103dp"
+        android:layout_weight="0.05" 
+        
+        />
+
+</LinearLayout>

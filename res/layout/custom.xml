@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    
+    android:layout_width="fill_parent"
+    android:layout_height="80dip"
+   	android:background="#00000000"
+    
+    
+    
+>
+<!-- android:background="#330000FF"-->
+    <ImageView
+        android:id="@+id/Button01"
+        android:layout_width="50dip"
+	    android:layout_height="50dip"
+	    android:src="@drawable/cambut"
+        
+        android:layout_centerInParent="true"
+        android:layout_marginTop="5dip"
+	    android:layout_marginBottom="5dip"
+         />
+
+	<ImageView
+	    android:id="@+id/imgview"
+	    android:layout_width="40dip"
+	    android:layout_height="40dip"
+	    android:layout_alignBottom="@+id/Button01"
+	    android:layout_alignParentLeft="true"
+	    android:layout_alignTop="@+id/Button01"
+	    android:layout_marginLeft="20dip"
+	    android:src="@drawable/effect_but" 
+	    android:visibility="invisible"
+	    />
+
+	<ImageView
+	    android:id="@+id/galleryimage"
+	    android:layout_width="40dip"
+	    android:layout_height="40dip"
+	    android:layout_alignBottom="@+id/Button01"
+	    android:layout_alignParentRight="true"
+	    android:layout_alignTop="@+id/imgview"
+	    android:layout_marginRight="20dp"
+	    android:clickable="false"
+	    android:src="@drawable/galicon" />
+
+</RelativeLayout >
