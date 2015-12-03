@@ -45,6 +45,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.PointF;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.media.ExifInterface;
@@ -55,11 +57,13 @@ import android.os.Debug;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
+import android.util.FloatMath;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.webkit.WebView.FindListener;
 import android.widget.AdapterView;
@@ -86,7 +90,7 @@ import jp.co.cyberagent.android.gpuimage.GPUImageOpacityFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageOverlayBlendFilter;
 
 
-public class ImgView extends Activity{
+public class ImgView extends Activity implements OnTouchListener{
 	
 	ImageView imgview;
 	Button savebut;
@@ -101,6 +105,17 @@ public class ImgView extends Activity{
 	LinearLayout lnlayout;
 	ImageView imageView[];
 	AlertDialog.Builder alertDialog;
+	
+	public void selectedFilter(ImageView imageView[], int index){
+		for(int i=1;i<imageView.length;i++){
+			if(i==index)
+				imageView[i].getDrawable().setColorFilter(0x33ff69b4,PorterDuff.Mode.SRC_ATOP);
+			else
+				imageView[i].getDrawable().clearColorFilter();
+		}
+		
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -116,7 +131,7 @@ public class ImgView extends Activity{
 		
         // list of filters
 		int[] imgs = { R.drawable.original,R.drawable.skinicon, R.drawable.eff1945, R.drawable.eff1975, R.drawable.eff2015 };
-		imageView=new ImageView[10];
+		imageView=new ImageView[5];
 	    for (int i = 0; i < 5; i++) {
 	        imageView[i] = new ImageView(this);
 	      
@@ -131,6 +146,7 @@ public class ImgView extends Activity{
 	        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(120, 120);
 	        layoutParams.setMargins(3, 0, 3, 0);
 	        imageView[i].setLayoutParams(layoutParams);
+	        
 	        imageView[i].setOnClickListener(new OnClickListener() {
 				
 				@Override
@@ -139,20 +155,31 @@ public class ImgView extends Activity{
 					Log.d("onclick  ", "ok");
 					if(v==imageView[0])
 					{
+						selectedFilter(imageView,0);
 						imgview.setImageBitmap(bitmap);
 						bitmapresult=bitmap;
 					}
 		            
-					if(v==imageView[1])
+					if(v==imageView[1]){
+						selectedFilter(imageView,1);
 						new ProgressTask().execute();
-					if(v==imageView[2])
+					}
+					if(v==imageView[2]){
+						selectedFilter(imageView,2);
 						new ProgressTask2().execute();
-					if(v==imageView[3])
+					}
+					if(v==imageView[3]){
+						selectedFilter(imageView,3);
 						new ProgressTask3().execute();
-					if(v==imageView[4])
-						new ProgressTask4().execute();			
+					}
+					if(v==imageView[4]){
+						selectedFilter(imageView,4);
+						new ProgressTask4().execute();	
+					}
 				}
 			});
+			
+	       
 	        lnlayout.addView(imageView[i]);
 	    }
 	   // --end list of filters--
@@ -239,7 +266,7 @@ public class ImgView extends Activity{
 		});
 		
 		
-		
+		/*
 		imgview.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
@@ -258,8 +285,9 @@ public class ImgView extends Activity{
 			}
 			
 		});
+		*/
 		
-	
+		imgview.setOnTouchListener(this);
 		
 		savebut.setOnClickListener(new View.OnClickListener() {
 			
@@ -1120,6 +1148,154 @@ public class ImgView extends Activity{
 		
 	}
 	
+	
+	// Make zoom in,out--------------------------------------------------------------------
+	private static final String TAG = "Touch";
+    @SuppressWarnings("unused")
+    private static final float MIN_ZOOM = 1f,MAX_ZOOM = 1f;
+
+    // These matrices will be used to scale points of the image
+    Matrix matrix = new Matrix();
+    Matrix savedMatrix = new Matrix();
+
+    // The 3 states (events) which the user is trying to perform
+    static final int NONE = 0;
+    static final int DRAG = 1;
+    static final int ZOOM = 2;
+    int mode = NONE;
+
+    // these PointF objects are used to record the point(s) the user is touching
+    PointF start = new PointF();
+    PointF mid = new PointF();
+    float oldDist = 1f;
+	 @Override
+	    public boolean onTouch(View v, MotionEvent event) 
+	    {
+	        ImageView view = (ImageView) v;
+	        view.setScaleType(ImageView.ScaleType.MATRIX);
+	        float scale;
+
+	        dumpEvent(event);
+	        // Handle touch events here...
+
+	        switch (event.getAction() & MotionEvent.ACTION_MASK) 
+	        {
+	            case MotionEvent.ACTION_DOWN:   // first finger down only
+	                                                savedMatrix.set(matrix);
+	                                                start.set(event.getX(), event.getY());
+	                                                Log.d(TAG, "mode=DRAG"); // write to LogCat
+	                                                mode = DRAG;
+	                                                imgview.setImageBitmap(bitmap);
+	                                                break;
+
+	            case MotionEvent.ACTION_UP: imgview.setImageBitmap(bitmapresult);// first finger lifted
+
+	            case MotionEvent.ACTION_POINTER_UP: // second finger lifted
+
+	                                                mode = NONE;
+	                                                Log.d(TAG, "mode=NONE");
+	                                                break;
+
+	            case MotionEvent.ACTION_POINTER_DOWN: // first and second finger down
+
+	                                                oldDist = spacing(event);
+	                                                Log.d(TAG, "oldDist=" + oldDist);
+	                                                if (oldDist > 5f) {
+	                                                    savedMatrix.set(matrix);
+	                                                    midPoint(mid, event);
+	                                                    mode = ZOOM;
+	                                                    Log.d(TAG, "mode=ZOOM");
+	                                                }
+	                                                break;
+
+	            case MotionEvent.ACTION_MOVE:
+
+	                                                if (mode == DRAG) 
+	                                                { 
+	                                                    matrix.set(savedMatrix);
+	                                                    matrix.postTranslate(event.getX() - start.x, event.getY() - start.y); // create the transformation in the matrix  of points
+	                                                } 
+	                                                else if (mode == ZOOM) 
+	                                                { 
+	                                                    // pinch zooming
+	                                                    float newDist = spacing(event);
+	                                                    Log.d(TAG, "newDist=" + newDist);
+	                                                    if (newDist > 5f) 
+	                                                    {
+	                                                        matrix.set(savedMatrix);
+	                                                        scale = newDist / oldDist; // setting the scaling of the
+	                                                                                    // matrix...if scale > 1 means
+	                                                                                    // zoom in...if scale < 1 means
+	                                                                                    // zoom out
+	                                                        matrix.postScale(scale, scale, mid.x, mid.y);
+	                                                    }
+	                                                }
+	                                                break;
+	        }
+
+	        view.setImageMatrix(matrix); // display the transformation on screen
+
+	        return true; // indicate event was handled
+	    }
+
+	    /*
+	     * --------------------------------------------------------------------------
+	     * Method: spacing Parameters: MotionEvent Returns: float Description:
+	     * checks the spacing between the two fingers on touch
+	     * ----------------------------------------------------
+	     */
+
+	    private float spacing(MotionEvent event) 
+	    {
+	        float x = event.getX(0) - event.getX(1);
+	        float y = event.getY(0) - event.getY(1);
+	        return FloatMath.sqrt(x * x + y * y);
+	    }
+
+	    /*
+	     * --------------------------------------------------------------------------
+	     * Method: midPoint Parameters: PointF object, MotionEvent Returns: void
+	     * Description: calculates the midpoint between the two fingers
+	     * ------------------------------------------------------------
+	     */
+
+	    private void midPoint(PointF point, MotionEvent event) 
+	    {
+	        float x = event.getX(0) + event.getX(1);
+	        float y = event.getY(0) + event.getY(1);
+	        point.set(x / 2, y / 2);
+	    }
+
+	    /** Show an event in the LogCat view, for debugging */
+	    private void dumpEvent(MotionEvent event) 
+	    {
+	        String names[] = { "DOWN", "UP", "MOVE", "CANCEL", "OUTSIDE","POINTER_DOWN", "POINTER_UP", "7?", "8?", "9?" };
+	        StringBuilder sb = new StringBuilder();
+	        int action = event.getAction();
+	        int actionCode = action & MotionEvent.ACTION_MASK;
+	        sb.append("event ACTION_").append(names[actionCode]);
+
+	        if (actionCode == MotionEvent.ACTION_POINTER_DOWN || actionCode == MotionEvent.ACTION_POINTER_UP) 
+	        {
+	            sb.append("(pid ").append(action >> MotionEvent.ACTION_POINTER_ID_SHIFT);
+	            sb.append(")");
+	        }
+
+	        sb.append("[");
+	        for (int i = 0; i < event.getPointerCount(); i++) 
+	        {
+	            sb.append("#").append(i);
+	            sb.append("(pid ").append(event.getPointerId(i));
+	            sb.append(")=").append((int) event.getX(i));
+	            sb.append(",").append((int) event.getY(i));
+	            if (i + 1 < event.getPointerCount())
+	                sb.append(";");
+	        }
+
+	        sb.append("]");
+	        Log.d("Touch Events ---------", sb.toString());
+	    }
+	//end of zoom in,out----------------------------------------------------------------------
 }	
 	
 
