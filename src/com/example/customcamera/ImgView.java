@@ -76,6 +76,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 import jp.co.cyberagent.android.gpuimage.GPUImage;
 import jp.co.cyberagent.android.gpuimage.GPUImageAddBlendFilter;
@@ -103,8 +104,13 @@ public class ImgView extends Activity implements OnTouchListener{
 	ProgressBar bar;
 	String filename;
 	LinearLayout lnlayout;
-	ImageView imageView[];
+	ImageView effectChoose[];
+	ImageView beautyChoose[];
 	AlertDialog.Builder alertDialog;
+	
+	TextView beauty;
+	TextView effects;
+	TextView frames;
 	
 	public void selectedFilter(ImageView imageView[], int index){
 		for(int i=1;i<imageView.length;i++){
@@ -116,6 +122,123 @@ public class ImgView extends Activity implements OnTouchListener{
 		
 	}
 	
+	
+	//---------------------default list of filters----------------------------------------------------
+	public void setDefaultFilters(){
+		effects.setTextColor(Color.parseColor("#FF00FF"));
+		 // list of filters
+		lnlayout.removeAllViews();
+		int[] imgs = { R.drawable.original, R.drawable.eff1945, R.drawable.eff1975, R.drawable.eff2015 };
+		effectChoose=new ImageView[4];
+	    for (int i = 0; i < 4; i++) {
+	    	effectChoose[i] = new ImageView(this);
+	      
+	    	effectChoose[i].setPadding(2, 2, 2, 2);
+	        
+	       // set bitmap for imageviews
+	        Bitmap bm = BitmapFactory.decodeResource(getResources(), imgs[i]);
+	        bm=ImageHelper.getRoundedCornerBitmap(bm, 20);
+	        effectChoose[i].setImageBitmap(bm);
+	        //imageView[i].setBackgroundResource(imgs[i]);
+	       
+	        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(120, 120);
+	        layoutParams.setMargins(3, 0, 3, 0);
+	        effectChoose[i].setLayoutParams(layoutParams);
+	        
+	        effectChoose[i].setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					Log.d("onclick  ", "ok");
+					if(v==effectChoose[0])
+					{
+						selectedFilter(effectChoose,0);
+						imgview.setImageBitmap(bitmap);
+						bitmapresult=bitmap;
+					}
+		            
+					if(v==effectChoose[1]){
+						selectedFilter(effectChoose,1);
+						new ProgressTask2().execute();
+					}
+					if(v==effectChoose[2]){
+						selectedFilter(effectChoose,2);
+						new ProgressTask3().execute();
+					}
+					if(v==effectChoose[3]){
+						selectedFilter(effectChoose,3);
+						new ProgressTask4().execute();	
+					}
+				}
+			});
+			
+	       
+	        lnlayout.addView(effectChoose[i]);
+	    }
+	   // --end list of filters--
+	   
+		
+	}
+	
+	// -------------------------end default list---------------------
+	
+	// beauty filters-----------------------------------
+	public void setBeautyFilters(){
+		lnlayout.removeAllViews();
+		int[] imgs = {R.drawable.original, R.drawable.skinicon};
+		beautyChoose=new ImageView[2];
+		 for (int i = 0; i < 2; i++) {
+			 beautyChoose[i] = new ImageView(ImgView.this);
+			 beautyChoose[i].setPadding(2, 2, 2, 2);
+		        
+		       // set bitmap for imageviews
+		        Bitmap bm = BitmapFactory.decodeResource(getResources(), imgs[i]);
+		        bm=ImageHelper.getRoundedCornerBitmap(bm, 20);
+		        beautyChoose[i].setImageBitmap(bm);
+		        //imageView[i].setBackgroundResource(imgs[i]);
+		       
+		        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(120, 120);
+		        layoutParams.setMargins(3, 0, 3, 0);
+		        beautyChoose[i].setLayoutParams(layoutParams);
+		        
+		        beautyChoose[i].setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						Log.d("onclick  ", "ok");
+						if(v==beautyChoose[0])
+						{
+							selectedFilter(beautyChoose,0);
+							imgview.setImageBitmap(bitmap);
+							bitmapresult=bitmap;
+						}
+			            
+						if(v==beautyChoose[1]){
+							selectedFilter(beautyChoose,1);
+							new ProgressTask().execute();
+						}
+						
+					}
+				});
+				
+		        lnlayout.addView(beautyChoose[i]);
+		    }
+		
+	}
+	
+	//end beauty filters--------------------------------
+	
+	//restart text clicked effect
+	public void resetText(){
+		beauty.setTextColor(Color.parseColor("#FFFFFF"));
+		effects.setTextColor(Color.parseColor("#FFFFFF"));
+		frames.setTextColor(Color.parseColor("#FFFFFF"));
+		
+	}
+	//end 
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -126,66 +249,39 @@ public class ImgView extends Activity implements OnTouchListener{
 		bar = (ProgressBar) this.findViewById(R.id.progressBaredit);
 		cancelbut=(Button)findViewById(R.id.canceledit);
 		lnlayout = (LinearLayout) findViewById(R.id.linearScrolledit);
+		beauty=(TextView)findViewById(R.id.textBeauty);
+		effects=(TextView)findViewById(R.id.textEffect);
+		frames=(TextView)findViewById(R.id.textFrame);
 		
+		//----set events for texts-------------
 		
-		
-        // list of filters
-		int[] imgs = { R.drawable.original,R.drawable.skinicon, R.drawable.eff1945, R.drawable.eff1975, R.drawable.eff2015 };
-		imageView=new ImageView[5];
-	    for (int i = 0; i < 5; i++) {
-	        imageView[i] = new ImageView(this);
-	      
-	        imageView[i].setPadding(2, 2, 2, 2);
-	        
-	       // set bitmap for imageviews
-	        Bitmap bm = BitmapFactory.decodeResource(getResources(), imgs[i]);
-	        bm=ImageHelper.getRoundedCornerBitmap(bm, 20);
-	        imageView[i].setImageBitmap(bm);
-	        //imageView[i].setBackgroundResource(imgs[i]);
-	       
-	        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(120, 120);
-	        layoutParams.setMargins(3, 0, 3, 0);
-	        imageView[i].setLayoutParams(layoutParams);
-	        
-	        imageView[i].setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					Log.d("onclick  ", "ok");
-					if(v==imageView[0])
-					{
-						selectedFilter(imageView,0);
-						imgview.setImageBitmap(bitmap);
-						bitmapresult=bitmap;
-					}
-		            
-					if(v==imageView[1]){
-						selectedFilter(imageView,1);
-						new ProgressTask().execute();
-					}
-					if(v==imageView[2]){
-						selectedFilter(imageView,2);
-						new ProgressTask2().execute();
-					}
-					if(v==imageView[3]){
-						selectedFilter(imageView,3);
-						new ProgressTask3().execute();
-					}
-					if(v==imageView[4]){
-						selectedFilter(imageView,4);
-						new ProgressTask4().execute();	
-					}
-				}
-			});
+		beauty.setOnClickListener(new View.OnClickListener() {
 			
-	       
-	        lnlayout.addView(imageView[i]);
-	    }
-	   // --end list of filters--
-	   
-
-	    
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				resetText();
+				((TextView) v).setTextColor(Color.parseColor("#FF00FF"));
+				setBeautyFilters();
+				
+			}
+		});
+		
+		effects.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				resetText();
+				((TextView) v).setTextColor(Color.parseColor("#FF00FF"));
+				setDefaultFilters();
+			}
+		});
+		//--------end set events------------------------
+		
+		
+		
+		setDefaultFilters();
 		
 		if (!OpenCVLoader.initDebug()) {
 	        // Handle initialization error

@@ -4,26 +4,6 @@
     android:layout_height="fill_parent"
     android:background="#D9000000" >
 
-    
-
-    <HorizontalScrollView
-        android:id="@+id/horizontalScrollView1edit"
-        android:layout_width="fill_parent"
-        android:layout_height="100dip"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/imgedit"
-        android:scrollbars="none" >
-
-        <LinearLayout
-            android:id="@+id/linearScrolledit"
-            android:layout_width="fill_parent"
-            android:layout_height="match_parent"
-            android:clickable="true"
-            android:orientation="horizontal" >
-        </LinearLayout>
-    </HorizontalScrollView>
-
     <Button
         android:id="@+id/saveedit"
         android:layout_width="wrap_content"
@@ -40,7 +20,7 @@
     <ImageView
         android:id="@+id/imgedit"
         android:layout_width="match_parent"
-        android:layout_height="350dp"
+        android:layout_height="320dp"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/canceledit"
         android:layout_marginTop="18dp"
@@ -68,5 +48,56 @@
         android:indeterminateDrawable="@drawable/progress"
         android:visibility="gone" >
     </ProgressBar>
+
+     <TextView
+         android:id="@+id/textFrame"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignRight="@+id/saveedit"
+		 android:layout_alignParentBottom="true"
+         android:text="Frames" 
+         android:textSize="18sp"
+         android:layout_marginBottom="3dp" 
+         android:textColor="#FFFFFF"/>
+
+     <TextView
+         android:id="@+id/textEffect"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentBottom="true"
+         android:layout_centerHorizontal="true"
+         android:text="Effects"
+         android:textSize="18sp" 
+        android:layout_marginBottom="3dp" 
+         android:textColor="#FFFFFF"/>
+
+     <HorizontalScrollView
+         android:id="@+id/horizontalScrollView1edit"
+         android:layout_width="fill_parent"
+         android:layout_height="100dip"
+         android:layout_alignParentBottom="true"
+         android:layout_alignParentLeft="true"
+         android:layout_marginBottom="22dp"
+         android:scrollbars="none" >
+
+         <LinearLayout
+             android:id="@+id/linearScrolledit"
+             android:layout_width="fill_parent"
+             android:layout_height="match_parent"
+             android:clickable="true"
+             android:orientation="horizontal" >
+         </LinearLayout>
+     </HorizontalScrollView>
+
+     <TextView
+         android:id="@+id/textBeauty"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignLeft="@+id/canceledit"
+         android:layout_alignParentBottom="true"
+         android:text="Beauty"
+         android:textSize="18sp"
+         android:layout_marginBottom="3dp" 
+         android:textColor="#FFFFFF"/>
 
 </RelativeLayout>
