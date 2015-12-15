@@ -356,11 +356,11 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback,Sen
 			});
 	        
 	        
-		        effect_normal=(ImageView) viewControl2.findViewById(R.id.normal_eff);
-		        effect_sepia=(ImageView)viewControl2.findViewById(R.id.sepia_eff);
-		        effect_mono=(ImageView)viewControl2.findViewById(R.id.mono_eff);
-		        effect_sunset=(ImageView)viewControl2.findViewById(R.id.sunset_eff);
-		        
+		        //effect_normal=(ImageView) viewControl2.findViewById(R.id.normal_eff);
+		        //effect_sepia=(ImageView)viewControl2.findViewById(R.id.sepia_eff);
+		        //effect_mono=(ImageView)viewControl2.findViewById(R.id.mono_eff);
+		        //effect_sunset=(ImageView)viewControl2.findViewById(R.id.sunset_eff);
+		      /*  
 		       effect_normal.setOnClickListener(new OnClickListener() {
 				
 				@Override
@@ -408,7 +408,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback,Sen
 					
 				});
 		        
-				
+				*/
 		        // intialize sensor variables
 		      mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
 		      accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);

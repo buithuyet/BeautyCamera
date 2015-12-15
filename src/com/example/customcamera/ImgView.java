@@ -2,6 +2,8 @@ package com.example.customcamera;
 
 import java.io.ByteArrayOutputStream;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -35,6 +37,7 @@ import org.opencv.objdetect.CascadeClassifier;
 import com.facebook.FacebookActivity;
 import com.facebook.FacebookSdk;
 
+import android.R.integer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -76,6 +79,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import jp.co.cyberagent.android.gpuimage.GPUImage;
@@ -91,11 +95,12 @@ import jp.co.cyberagent.android.gpuimage.GPUImageOpacityFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageOverlayBlendFilter;
 
 
-public class ImgView extends Activity implements OnTouchListener{
+public class ImgView extends Activity implements OnTouchListener,OnSeekBarChangeListener{
 	
 	ImageView imgview;
 	Button savebut;
 	Button cancelbut;
+	Button backfilter;
 	Bitmap bitmap;
 	Bitmap bitmapresult;
 	Mat mat;
@@ -106,11 +111,19 @@ public class ImgView extends Activity implements OnTouchListener{
 	LinearLayout lnlayout;
 	ImageView effectChoose[];
 	ImageView beautyChoose[];
+	ImageView borderMenu[];
+	ImageView borderChoose[];
 	AlertDialog.Builder alertDialog;
+	SeekBar seekbar;
 	
 	TextView beauty;
 	TextView effects;
 	TextView frames;
+	int[] imgBorderMenu={R.drawable.christmas,R.drawable.newyear};
+	int[] imgBorder = {R.drawable.backicon,R.drawable.original, R.drawable.chris1,R.drawable.chris2,R.drawable.chris3,
+			R.drawable.chris4,R.drawable.chris5,R.drawable.chris6,R.drawable.chris7,R.drawable.chris8,R.drawable.chris9,R.drawable.chris10};
+	float opacity;
+	int imageID;
 	
 	public void selectedFilter(ImageView imageView[], int index){
 		for(int i=1;i<imageView.length;i++){
@@ -122,26 +135,37 @@ public class ImgView extends Activity implements OnTouchListener{
 		
 	}
 	
+	// seekbar
 	
+	public void enableSeekbar(boolean state){
+		if(state==true)
+			seekbar.setEnabled(true);
+		else seekbar.setEnabled(false);
+		
+		
+	}
+	// end seekbar
 	//---------------------default list of filters----------------------------------------------------
 	public void setDefaultFilters(){
+		enableSeekbar(false);
 		effects.setTextColor(Color.parseColor("#FF00FF"));
 		 // list of filters
 		lnlayout.removeAllViews();
 		int[] imgs = { R.drawable.original, R.drawable.eff1945, R.drawable.eff1975, R.drawable.eff2015 };
 		effectChoose=new ImageView[4];
+		Bitmap bm;
 	    for (int i = 0; i < 4; i++) {
 	    	effectChoose[i] = new ImageView(this);
 	      
 	    	effectChoose[i].setPadding(2, 2, 2, 2);
 	        
 	       // set bitmap for imageviews
-	        Bitmap bm = BitmapFactory.decodeResource(getResources(), imgs[i]);
+	        bm = BitmapFactory.decodeResource(getResources(), imgs[i]);
 	        bm=ImageHelper.getRoundedCornerBitmap(bm, 20);
 	        effectChoose[i].setImageBitmap(bm);
 	        //imageView[i].setBackgroundResource(imgs[i]);
 	       
-	        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(120, 120);
+	        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(100, 100);
 	        layoutParams.setMargins(3, 0, 3, 0);
 	        effectChoose[i].setLayoutParams(layoutParams);
 	        
@@ -150,6 +174,7 @@ public class ImgView extends Activity implements OnTouchListener{
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
+					
 					Log.d("onclick  ", "ok");
 					if(v==effectChoose[0])
 					{
@@ -185,20 +210,22 @@ public class ImgView extends Activity implements OnTouchListener{
 	
 	// beauty filters-----------------------------------
 	public void setBeautyFilters(){
+		enableSeekbar(false);
 		lnlayout.removeAllViews();
 		int[] imgs = {R.drawable.original, R.drawable.skinicon};
 		beautyChoose=new ImageView[2];
+		Bitmap bm;
 		 for (int i = 0; i < 2; i++) {
 			 beautyChoose[i] = new ImageView(ImgView.this);
 			 beautyChoose[i].setPadding(2, 2, 2, 2);
 		        
 		       // set bitmap for imageviews
-		        Bitmap bm = BitmapFactory.decodeResource(getResources(), imgs[i]);
+		        bm = BitmapFactory.decodeResource(getResources(), imgs[i]);
 		        bm=ImageHelper.getRoundedCornerBitmap(bm, 20);
 		        beautyChoose[i].setImageBitmap(bm);
 		        //imageView[i].setBackgroundResource(imgs[i]);
 		       
-		        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(120, 120);
+		        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(100, 100);
 		        layoutParams.setMargins(3, 0, 3, 0);
 		        beautyChoose[i].setLayoutParams(layoutParams);
 		        
@@ -206,8 +233,6 @@ public class ImgView extends Activity implements OnTouchListener{
 					
 					@Override
 					public void onClick(View v) {
-						// TODO Auto-generated method stub
-						Log.d("onclick  ", "ok");
 						if(v==beautyChoose[0])
 						{
 							selectedFilter(beautyChoose,0);
@@ -230,6 +255,169 @@ public class ImgView extends Activity implements OnTouchListener{
 	
 	//end beauty filters--------------------------------
 	
+	// frames-----------------------------------
+	
+	public void setBorderMenu(){
+		enableSeekbar(false);
+		lnlayout.removeAllViews();
+		borderMenu=new ImageView[2];
+		Bitmap bm;
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inSampleSize = 4;
+		 for (int i = 0; i < 2; i++) {
+			 borderMenu[i] = new ImageView(ImgView.this);
+			 borderMenu[i].setPadding(2, 2, 2, 2);
+		        
+		       // set bitmap for imageviews
+		        bm = BitmapFactory.decodeResource(getResources(), imgBorderMenu[i],options);
+		        bm=ImageHelper.getRoundedCornerBitmap(bm, 20);
+		        borderMenu[i].setImageBitmap(bm);
+		        //imageView[i].setBackgroundResource(imgs[i]);
+		       
+		        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(100, 100);
+		        layoutParams.setMargins(3, 0, 3, 0);
+		        borderMenu[i].setLayoutParams(layoutParams);
+		        
+		        borderMenu[i].setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						addBorderMenu(v);
+						
+					}
+				});
+				
+		        lnlayout.addView(borderMenu[i]);
+		        
+		    }
+	}
+	//add bordermenu
+	public void addBorderMenu(View v){
+		if(v==borderMenu[0])
+		{	
+			selectedFilter(borderMenu,0);
+			setBorders();
+			
+		}
+		
+		if(v==borderMenu[1]){
+			selectedFilter(borderMenu,1);
+		}
+		
+	}
+	
+	//end add bordermenu
+	public void setBorders(){
+			lnlayout.removeAllViews();
+			
+			borderChoose=new ImageView[12];
+			Bitmap bm;
+			BitmapFactory.Options options = new BitmapFactory.Options();
+			options.inSampleSize = 4;
+			 for (int i = 0; i < 12; i++) {
+				 borderChoose[i] = new ImageView(ImgView.this);
+				 borderChoose[i].setPadding(2, 2, 2, 2);
+			        
+			       // set bitmap for imageviews
+			        bm = BitmapFactory.decodeResource(getResources(), imgBorder[i],options);
+			        bm=ImageHelper.getRoundedCornerBitmap(bm, 20);
+			        borderChoose[i].setImageBitmap(bm);
+			        //imageView[i].setBackgroundResource(imgs[i]);
+			       
+			        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(100, 100);
+			        layoutParams.setMargins(3, 0, 3, 0);
+			        borderChoose[i].setLayoutParams(layoutParams);
+			        
+			        borderChoose[i].setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							// TODO Auto-generated method stub
+							enableSeekbar(true);
+							addBorder(v);
+							
+						}
+					});
+					
+			        lnlayout.addView(borderChoose[i]);
+			        
+			    }
+			
+		}
+		
+		//end frames--------------------------------
+		
+	
+	// add boder---------------
+		public void addBorder(View v){
+			
+			if(v==borderChoose[0])
+			{
+				selectedFilter(borderChoose,0);
+				setBorderMenu();
+			}
+			if(v==borderChoose[1])
+			{
+				selectedFilter(borderChoose,1);
+				imgview.setImageBitmap(bitmap);
+				bitmapresult=bitmap;
+			}
+			for(int i=2;i<12;i++){
+				if(v==borderChoose[i]){
+					selectedFilter(borderChoose,i);
+					new ProgressBorder().execute(imgBorder[i]);
+				}
+			}
+			
+		}
+		
+	//end add border-----------	
+		private class ProgressBorder extends AsyncTask <Integer,Void,Void>{
+		    @Override
+		    protected void onPreExecute(){
+		        bar.setVisibility(View.VISIBLE);
+		        setnotClickable();
+		       
+		    }
+		   
+
+		    @Override
+		    protected void onPostExecute(Void result) {
+		          bar.setVisibility(View.GONE);
+		          runOnUiThread(new Runnable() {
+			          @Override
+					public void run() {  
+			        	  			imgview.setImageBitmap(bitmapresult);
+								   }
+							});
+		          
+		          setClickable();
+		    }
+
+
+			@Override
+			protected Void doInBackground(Integer... params) {
+				// TODO Auto-generated method stub
+				imageID=params[0];
+				overlayBorder();
+				return null;
+			}
+		}
+		
+		public void overlayBorder (){
+			GPUImageAlphaBlendFilter border=new GPUImageAlphaBlendFilter(opacity);
+			Bitmap bm = BitmapFactory.decodeResource(getResources(),imageID);
+			border.setBitmap(bm);
+			
+			GPUImage mGPUImage = new GPUImage(this);
+			mGPUImage.setFilter(border);
+			mGPUImage.setImage(bitmap);
+			bitmapresult=mGPUImage.getBitmapWithFilterApplied();
+			
+			bm.recycle();
+		}
+		
 	//restart text clicked effect
 	public void resetText(){
 		beauty.setTextColor(Color.parseColor("#FFFFFF"));
@@ -246,12 +434,16 @@ public class ImgView extends Activity implements OnTouchListener{
 		setContentView(R.layout.imgedit);
 		imgview=(ImageView)findViewById(R.id.imgedit);
 		savebut=(Button)findViewById(R.id.saveedit);
+		
 		bar = (ProgressBar) this.findViewById(R.id.progressBaredit);
+		seekbar=(SeekBar)findViewById(R.id.seekBar1);
 		cancelbut=(Button)findViewById(R.id.canceledit);
 		lnlayout = (LinearLayout) findViewById(R.id.linearScrolledit);
 		beauty=(TextView)findViewById(R.id.textBeauty);
 		effects=(TextView)findViewById(R.id.textEffect);
 		frames=(TextView)findViewById(R.id.textFrame);
+		
+		opacity=1.0f;
 		
 		//----set events for texts-------------
 		
@@ -277,6 +469,18 @@ public class ImgView extends Activity implements OnTouchListener{
 				setDefaultFilters();
 			}
 		});
+		frames.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				resetText();
+				((TextView) v).setTextColor(Color.parseColor("#FF00FF"));
+				setBorderMenu();
+			}
+		});
+		
+		seekbar.setOnSeekBarChangeListener(this);
 		//--------end set events------------------------
 		
 		
@@ -1392,6 +1596,31 @@ public class ImgView extends Activity implements OnTouchListener{
 	        Log.d("Touch Events ---------", sb.toString());
 	    }
 	//end of zoom in,out----------------------------------------------------------------------
+
+
+		@Override
+		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+			// TODO Auto-generated method stub
+			opacity=(float)progress/100;
+			
+			
+		}
+
+
+		@Override
+		public void onStartTrackingTouch(SeekBar seekBar) {
+			// TODO Auto-generated method stub
+			
+		}
+
+
+		@Override
+		public void onStopTrackingTouch(SeekBar seekBar) {
+			// TODO Auto-generated method stub
+			//Toast.makeText(ImgView.this,"seek bar progress:"+imageID, Toast.LENGTH_SHORT).show();
+			overlayBorder();
+			imgview.setImageBitmap(bitmapresult);
+		}
 }	
 	
 

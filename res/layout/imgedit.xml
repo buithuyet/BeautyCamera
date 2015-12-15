@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#D9000000" >
+    android:background="#D9000000" 
+    android:id="@+id/imgeditID">
 
     <Button
         android:id="@+id/saveedit"
@@ -20,7 +21,7 @@
     <ImageView
         android:id="@+id/imgedit"
         android:layout_width="match_parent"
-        android:layout_height="320dp"
+        android:layout_height="300dp"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/canceledit"
         android:layout_marginTop="18dp"
@@ -71,13 +72,23 @@
         android:layout_marginBottom="3dp" 
          android:textColor="#FFFFFF"/>
 
+     <TextView
+         android:id="@+id/textBeauty"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignLeft="@+id/canceledit"
+         android:layout_alignParentBottom="true"
+         android:text="Beauty"
+         android:textSize="18sp"
+         android:layout_marginBottom="3dp" 
+         android:textColor="#FFFFFF"/>
+
      <HorizontalScrollView
          android:id="@+id/horizontalScrollView1edit"
          android:layout_width="fill_parent"
-         android:layout_height="100dip"
-         android:layout_alignParentBottom="true"
+         android:layout_height="80dp"
          android:layout_alignParentLeft="true"
-         android:layout_marginBottom="22dp"
+         android:layout_above="@+id/seekBar1"
          android:scrollbars="none" >
 
          <LinearLayout
@@ -89,15 +100,11 @@
          </LinearLayout>
      </HorizontalScrollView>
 
-     <TextView
-         android:id="@+id/textBeauty"
-         android:layout_width="wrap_content"
+     <SeekBar
+         android:id="@+id/seekBar1"
+         android:layout_width="match_parent"
          android:layout_height="wrap_content"
-         android:layout_alignLeft="@+id/canceledit"
-         android:layout_alignParentBottom="true"
-         android:text="Beauty"
-         android:textSize="18sp"
-         android:layout_marginBottom="3dp" 
-         android:textColor="#FFFFFF"/>
+         android:layout_above="@+id/textFrame"
+         android:layout_alignParentLeft="true" />
 
 </RelativeLayout>
